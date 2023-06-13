@@ -1,36 +1,45 @@
+from string import punctuation
+import re
+
 """
 скачать txt
 берет из файла txt
 топ 10/20 глаголов/сущ/прилагательных в этом тексте
 создать картинку - облако слов
 """
-"""
-content = open("text.txt", "r", encoding="UTF-8")
-# открытие файла
-text = content.read()
-# прочтение файла
-print(text)
-"""
 
 
 class TextAnalyser:
-    def __init__(self, file="text.txt", mode="r", encoding="UTF-8") -> None:
+    def __init__(self, file_name=None) -> None:
         """позвать цепочку методов"""
-        self.open_file(file, mode, encoding)
-        self.make_text()
+        if file_name is None:
+            raise Exception("не указан файл для анализа")
+        self.file_name = file_name
+        self.read_file()
+        self.prepare_text()
         self.print_text()
 
-    def open_file(self, file, mode, enc):
-        """создает контент из файла"""
-        self.content = open(file, mode, encoding=enc)
+    def read_file(self, mode="r", enc="UTF-8"):
+        try:
+            with open(self.file_name, mode, encoding=enc) as file:
+                self.file = file
+                self.text = self.file.read()
+        except FileNotFoundError:
+            raise Exception(f"файл {self.file_name} не найден!")
 
-    def make_text(self):
-        """создает текст"""
-        self.text = self.content.read()
+    def prepare_text(self):
+        self.text = self.text.lower()
+        self.words_unclean = self.text.split()
+        self.words_clean = []
+        punct = punctuation + "—"
+        for word in (self.words_unclean):
+            out = re.sub(rf"[{punct}]", "", word)
+            if out:
+                self.words_clean.append(out)
 
     def print_text(self):
         """выводит текст"""
-        print(self.text)
+        print(self.words_clean)
 
 
-TextAnalyser()
+TextAnalyser("text.txt")
