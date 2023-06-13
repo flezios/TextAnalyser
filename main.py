@@ -1,3 +1,4 @@
+from typing import NoReturn
 from string import punctuation
 import re
 
@@ -16,10 +17,12 @@ class TextAnalyser:
             raise Exception("не указан файл для анализа")
         self.file_name = file_name
         self.read_file()
+        self.check_empty_file()
         self.prepare_text()
         self.print_text()
 
-    def read_file(self, mode="r", enc="UTF-8"):
+    def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
+        """попытка чтения файла"""
         try:
             with open(self.file_name, mode, encoding=enc) as file:
                 self.file = file
@@ -27,7 +30,14 @@ class TextAnalyser:
         except FileNotFoundError:
             raise Exception(f"файл {self.file_name} не найден!")
 
-    def prepare_text(self):
+    def check_empty_file(self) -> None | NoReturn:
+        """проверяет есть ли текст"""
+        if not self.text:
+            raise Exception(
+                f"файл {self.file_name} пуст! используйте другой файл.")
+
+    def prepare_text(self) -> None:
+        """очишает и разделяет текст по словам"""
         self.text = self.text.lower()
         self.words_unclean = self.text.split()
         self.words_clean = []
@@ -37,7 +47,7 @@ class TextAnalyser:
             if out:
                 self.words_clean.append(out)
 
-    def print_text(self):
+    def print_text(self) -> None:
         """выводит текст"""
         print(self.words_clean)
 
