@@ -42,14 +42,21 @@ class TextAnalyser:
         self.words_unclean = self.text.split()
         self.words_clean = []
         punct = punctuation + "—"
+        """"""
         for word in (self.words_unclean):
+            # удаляет пунктуацию (raw строка + f строка что бы можно было использовать в качестве шаблона переменную [] - множество , "" - на что заменяет, и третий аргумент где заменяет)
             out = re.sub(rf"[{punct}]", "", word)
             if out:
                 self.words_clean.append(out)
+        """"""
+
+        self.words_clean = list(
+            filter(None, re.sub(rf"[{punct}]", "", " ".join(self.words_unclean)).split()))
 
     def print_text(self) -> None:
-        """выводит текст"""
+        """выводит текст и его длинну"""
         print(self.words_clean)
+        print(f"длинна текста: {len(self.words_clean)} слов.")
 
 
 TextAnalyser("text.txt")
