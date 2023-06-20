@@ -40,18 +40,10 @@ class TextAnalyser:
         """очишает и разделяет текст по словам"""
         self.text = self.text.lower()
         self.words_unclean = self.text.split()
-        self.words_clean = []
-        punct = punctuation + "—"
-        """
-        for word in (self.words_unclean):
-            # удаляет пунктуацию (raw строка + f строка что бы можно было использовать в качестве шаблона переменную [] - множество , "" - на что заменяет, и третий аргумент где заменяет)
-            out = re.sub(rf"[{punct}]", "", word)
-            if out:
-                self.words_clean.append(out)
-        """
-
-        self.words_clean = list(
-            filter(None, re.sub(rf"[{punct}]", "", " ".join(self.words_unclean)).split()))
+        self.punct = punctuation + "—"
+        self.words_clean = [
+            *(filter(None, re.sub(rf"[{self.punct}]\B", "", self.text).split()))]
+        # filter удаляет все пустые строки (тобешь None) второй аргумент откуда
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
