@@ -1,5 +1,4 @@
 from typing import NoReturn
-from string import punctuation
 import re
 
 """
