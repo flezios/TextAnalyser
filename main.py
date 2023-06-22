@@ -39,11 +39,8 @@ class TextAnalyser:
     def prepare_text(self) -> None:
         """очишает и разделяет текст по словам"""
         self.text = self.text.lower()
-        self.words_unclean = self.text.split()
         self.punct = punctuation + "—"
-        self.words_clean = [
-            *(filter(None, re.sub(rf"[{self.punct}]\B", "", self.text).split()))]
-        # filter удаляет все пустые строки (тобешь None) второй аргумент откуда
+        self.words_clean = re.findall(r"\b[\w-]+\b", self.text)
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
