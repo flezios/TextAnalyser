@@ -37,9 +37,8 @@ class TextAnalyser:
                 f"файл {self.file_name} пуст! используйте другой файл.")
 
     def prepare_text(self) -> None:
-        """очишает и разделяет текст по словам"""
+        """очишает и разделяет текст по словам + переводит в нижний регистр"""
         self.text = self.text.lower()
-        self.punct = punctuation + "—"
         self.words_clean = re.findall(r"\b[\w-]+\b", self.text)
 
     def print_text(self) -> None:
