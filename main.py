@@ -1,4 +1,5 @@
 from typing import NoReturn
+import pymorphy3
 import re
 
 """
@@ -18,6 +19,7 @@ class TextAnalyser:
         self.read_file()
         self.check_empty_file()
         self.prepare_text()
+        self.make_analyzed_words()
         self.print_text()
 
     def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
@@ -38,12 +40,26 @@ class TextAnalyser:
     def prepare_text(self) -> None:
         """очишает и разделяет текст по словам + переводит в нижний регистр"""
         self.text = self.text.lower()
-        self.words_clean = re.findall(r"\b[\w-]+\b", self.text)
+        self.words_clean = re.findall(r"\b[а-яё-]+\b", self.text)
+
+    def make_analyzed_words(self, inp=["VERB", "NOUN"]):
+        self.analyzed_words = []
+        morph = pymorphy3.MorphAnalyzer()
+        try:
+            for word in self.words_clean:
+                pars_word = morph.parse(word)[0]
+                if pars_word.tag.POS in inp:
+                    self.analyzed_words.append(pars_word.normal_form)
+        except:
+            raise Exception("неверная часть речи")
+        print(self.analyzed_words)
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
-        print(self.words_clean)
         print(f"длинна текста: {len(self.words_clean)} слов.")
+        print(self.analyzed_words)
+        print(
+            f"слов после парса: {len(self.analyzed_words)} слов.")
 
 
 TextAnalyser("text.txt")
