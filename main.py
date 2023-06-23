@@ -52,7 +52,6 @@ class TextAnalyser:
                     self.analyzed_words.append(pars_word.normal_form)
         except:
             raise Exception("неверная часть речи")
-        print(self.analyzed_words)
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
