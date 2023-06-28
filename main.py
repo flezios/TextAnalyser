@@ -24,7 +24,9 @@ class TextAnalyser:
         self.make_analyzed_words()
         self.check_empty_analyzed()
         self.find_popular_words()
+        self.create_object()
         self.generate_wordcloud()
+        self.generate_file()
         self.print_text()
 
     def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
@@ -70,13 +72,21 @@ class TextAnalyser:
         words_counter = collections.Counter(self.analyzed_words)
         self.popular_words = words_counter.most_common(num)
 
-    def generate_wordcloud(self, name="wordcloud.png") -> None:
+    def create_object(self, w=1920, h=1080, background="white", mwords=200) -> None:
+        self.wcl = wordcloud.WordCloud(
+            width=w, height=h, background_color=background, max_words=mwords)
+
+    def generate_wordcloud(self) -> None:
         """создание картинки"""
-        wcl = wordcloud.WordCloud(
-            width=800, height=400, background_color='white')
         words = collections.Counter(self.analyzed_words)
-        wcl.generate_from_frequencies(dict(words))
-        wcl.to_file(name)
+        self.wcl.generate_from_frequencies(dict(words))
+
+    def generate_file(self, name="wordcloud.png") -> None:
+        """создание файла"""
+        try:
+            self.wcl.to_file(name)
+        except:
+            raise Exception("файл невозможно записать")
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
