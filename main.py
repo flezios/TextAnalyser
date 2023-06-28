@@ -13,7 +13,7 @@ import wordcloud
 
 
 class TextAnalyser:
-    def __init__(self, file_name=None) -> None:
+    def __init__(self, file_name=None, pos=["VERB", "NOUN"], mwords=200, w=1920, h=1080, background="white") -> None:
         """позвать цепочку методов"""
         if file_name is None:
             raise Exception("не указан файл для анализа")
@@ -21,12 +21,12 @@ class TextAnalyser:
         self.read_file()
         self.check_empty_file()
         self.prepare_text()
-        self.make_analyzed_words()
+        self.make_analyzed_words(pos)
         self.check_empty_analyzed()
-        self.find_popular_words()
-        self.create_object()
+        self.find_popular_words(mwords)
+        self.create_object(w, h, background, mwords)
         self.generate_wordcloud()
-        self.generate_file()
+        self.save_image_to_file()
         self.print_text()
 
     def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
@@ -49,7 +49,7 @@ class TextAnalyser:
         self.text = self.text.lower()
         self.words_clean = re.findall(r"\b[а-яё-]+\b", self.text)
 
-    def make_analyzed_words(self, inp=["VERB", "NOUN"]) -> None | NoReturn:
+    def make_analyzed_words(self, inp) -> None | NoReturn:
         """разделяет по частям речи"""
         self.analyzed_words = []
         morph = pymorphy3.MorphAnalyzer()
@@ -67,12 +67,12 @@ class TextAnalyser:
             raise Exception(
                 "нет проанализированных слов")
 
-    def find_popular_words(self, num=10) -> None:
+    def find_popular_words(self, num) -> None:
         """поиск популярных слов"""
         words_counter = collections.Counter(self.analyzed_words)
         self.popular_words = words_counter.most_common(num)
 
-    def create_object(self, w=1920, h=1080, background="white", mwords=200) -> None:
+    def create_object(self, w, h, background, mwords) -> None:
         self.wcl = wordcloud.WordCloud(
             width=w, height=h, background_color=background, max_words=mwords)
 
@@ -81,7 +81,7 @@ class TextAnalyser:
         words = collections.Counter(self.analyzed_words)
         self.wcl.generate_from_frequencies(dict(words))
 
-    def generate_file(self, name="wordcloud.png") -> None:
+    def save_image_to_file(self, name="wordcloud.png") -> None:
         """создание файла"""
         try:
             self.wcl.to_file(name)
@@ -89,8 +89,13 @@ class TextAnalyser:
             raise Exception("файл невозможно записать")
 
     def print_text(self) -> None:
-        """выводит текст и его длинну"""
-        print(self.popular_words)
+        """выводит отчет по тексту"""
+        print(
+            f"----------\nвсего слов в тексте: [{len(self.words_clean)}]\n----------")
+        print(
+            f"найдено указанных частей речи: [{len(self.analyzed_words)}]\n---------")
+        print(
+            f"[{len(self.popular_words)}] наиболее популярных слов среди ваших частей речи: \n\n{self.popular_words}")
 
 
-TextAnalyser("text.txt")
+TextAnalyser("text.txt", ["VERB", "NOUN"], 20, 800, 400, "white")
