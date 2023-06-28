@@ -70,13 +70,13 @@ class TextAnalyser:
         words_counter = collections.Counter(self.analyzed_words)
         self.popular_words = words_counter.most_common(num)
 
-    def generate_wordcloud(self) -> None:
+    def generate_wordcloud(self, name="wordcloud.png") -> None:
         """создание картинки"""
         wcl = wordcloud.WordCloud(
             width=800, height=400, background_color='white')
         words = collections.Counter(self.analyzed_words)
         wcl.generate_from_frequencies(dict(words))
-        wcl.to_file("wordcloud.png")
+        wcl.to_file(name)
 
     def print_text(self) -> None:
         """выводит текст и его длинну"""
