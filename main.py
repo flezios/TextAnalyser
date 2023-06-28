@@ -13,7 +13,7 @@ import wordcloud
 
 
 class TextAnalyser:
-    def __init__(self, file_name=None, pos=["VERB", "NOUN"], mwords=200, w=1920, h=1080, background="white") -> None:
+    def __init__(self, file_name=None, pos=["VERB", "NOUN"], mwords=200, w=1920, h=1080, name="wordcloud.png", background="white") -> None:
         """позвать цепочку методов"""
         if file_name is None:
             raise Exception("не указан файл для анализа")
@@ -26,7 +26,7 @@ class TextAnalyser:
         self.find_popular_words(mwords)
         self.create_object(w, h, background, mwords)
         self.generate_wordcloud()
-        self.save_image_to_file()
+        self.save_image_to_file(name)
         self.print_text()
 
     def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
@@ -81,7 +81,7 @@ class TextAnalyser:
         words = collections.Counter(self.analyzed_words)
         self.wcl.generate_from_frequencies(dict(words))
 
-    def save_image_to_file(self, name="wordcloud.png") -> None:
+    def save_image_to_file(self, name) -> None:
         """создание файла"""
         try:
             self.wcl.to_file(name)
@@ -98,4 +98,4 @@ class TextAnalyser:
             f"[{len(self.popular_words)}] наиболее популярных слов среди ваших частей речи: \n\n{self.popular_words}")
 
 
-TextAnalyser("text.txt", ["VERB", "NOUN"], 20, 800, 400, "white")
+TextAnalyser("text.txt", ["VERB", "NOUN"], 20, 800, 400, background="white")
