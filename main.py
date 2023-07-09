@@ -4,9 +4,12 @@ allows  to specify a "NoReturn" return
 from typing import NoReturn
 import re
 import collections
+import chardet
 import pymorphy3
 import wordcloud
 
+class HighInaccuracyError(Exception):
+    pass
 
 class TextAnalyser:
     """
@@ -48,6 +51,7 @@ class TextAnalyser:
             wordcloud_height=height,
             wordcloud_background=background,
             name_image_file=name)
+        self.check_encoding_and_avaibality()
         self.read_file()
         self.check_empty_file()
         self.make_words()
@@ -84,6 +88,7 @@ class TextAnalyser:
         self.words_clean = None
         self.analyzed_words = []
         self.popular_words = None
+        self.encoding = None
         self.wcl = None
         if not parts_of_speech:
             parts_of_speech = ["VERB", "NOUN"]
@@ -104,10 +109,25 @@ class TextAnalyser:
             name_image_file = "wordcloud.png"
         self.name_image_file = name_image_file
 
-    def read_file(self, mode="r", enc="UTF-8") -> None | NoReturn:
+    def check_encoding_and_avaibality(self) -> None:
+        """
+        checks the encoding of the file, if the accuracy is below 51% it raises an error
+        """
+        try:
+            with open(self.input_file, "rb") as file:
+                data = file.read()
+                result = chardet.detect(data)
+                confidence = result['confidence']
+                if confidence >= 0.51:
+                    self.encoding = result["encoding"]
+                else:
+                    raise HighInaccuracyError("не удается точно определить кодировку")
+        except FileNotFoundError as exc:
+            raise FileNotFoundError(f"файл{self.input_file} не найден!") from exc
+    def read_file(self, mode="r") -> None | NoReturn:
         """file read attempt"""
         try:
-            with open(self.input_file, mode, encoding=enc) as file:
+            with open(self.input_file, mode, encoding=self.encoding) as file:
                 self.file = file
                 self.text = self.file.read()
         except FileNotFoundError as exc:
@@ -172,6 +192,9 @@ class TextAnalyser:
 
     def print_report(self) -> None:
         """outputs a text report"""
+        print("----------")
+        print(
+            fr"кодировка файла: * {self.encoding} *")
         print(
             f"----------\nвсего слов в тексте: [{len(self.words_clean)}]\n----------")
         print(
